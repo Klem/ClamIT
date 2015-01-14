@@ -1,0 +1,32 @@
+HTTP [start [port] [wwwroot]|| stop || help]
+
+ Port: port number between 0 and 65535
+
+ The files that are served by the MockHTTP are the one that are stored within the /http folder
+ unles you provide an absolute wwwroot.
+ While it is a standard HTTP server, is is discouraged to put files that are too big (> 100Mb).
+ It is still a simple mockup created for development purpose.
+
+
+Features + limitations:
+
+ Only one Java file
+ Java 1.1 compatible
+ Released as open source, Modified BSD licence
+ No fixed config files, logging, authorization etc. (Implement yourself if you need them.)
+ Supports parameter parsing of GET and POST methods (+ rudimentary PUT support in 1.25)
+ Supports both dynamic content and file serving
+ Supports file upload (since version 1.2, 2010)
+ Supports partial content (streaming)
+ Supports ETags
+ Never caches anything
+ Doesn't limit bandwidth, request time or simultaneous connections
+ Default code serves files and shows all HTTP parameters and headers
+ File server supports directory listing, index.html and index.htm
+ File server supports partial content (streaming)
+ File server supports ETags
+ File server does the 301 redirection trick for directories without '/'
+ File server supports simple skipping for files (continue download)
+ File server serves also very long files without memory overhead
+ Contains a built-in list of most common mime types 
+ All header names are converted lowercase so they don't vary between browsers/clients

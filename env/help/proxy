@@ -1,0 +1,22 @@
+ProxyConfig create || load [name] || unload [name] || delete [name] || list || help]";
+
+ Manages the proxy configurations that can be used during a session if needed.
+ A loaded proxy configuration will be applied to all command that make network call.
+ The proxy configuration are stored within /proxies.
+ Configurations are serialized and should therefore be NOT manually edited, although they can be mannually deleted.
+ No verification are made concerning the input (port range, url validity...). I trust you are smart enough to know what you are doing.
+ 
+ create : create a proxy configuration and asks. Information are asked along the way.
+		  Creating a proxy with a name that already exists will replace the existing proxy configuration, if any and without warning.
+		  name: the name given to the created configuration
+		  host: ip or url
+		  port:  0 > && < 65535
+		  user: the username used for authentication. Leave blank if no authentication is required
+		  pass: the password used for authentication. Leave blank if no authentication is required
+		   
+ load	: load a proxy configuration to be used for this session
+ unload	: unload the current proxy in use
+ delete : delete a proxy configuration. If you delete a loaded proxy configuration, 
+ 		  it will stay in use unless you unload it or end your session
+ test   : try to connect to the current proxy to check the settings
+ list	: list the available proxy configurations

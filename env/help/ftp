@@ -1,0 +1,15 @@
+MockFTP [start [port] [filesystem [win || nix]] || stop || help]
+
+ Port: port number between 0 and 65535
+ Filesystem : win for windows system, nix for *nix and macOs
+
+ The files that are loaded whithin the MockFTP at runtime are stored within the /ftp folder
+ unles you provide an absolute wwwroot.
+ You may dump files in this folder if you want to work with them during the FTP session.
+ Files dumped are read and recreated at runtime within the FTP "filesystem",
+ incuding their content so avoid dumping large /too many files or your memory will bloat.
+ and the startup time take very long. 
+ However, any java.lang.OutOfMemoryError will be caught and won't crash the JVM.
+ Proper content recreation won't (more than likely) work properly with binaries. 
+ Every changes made to the files during the FTP session do not affect the physical filestsyem.
+ Changes are only reflected within the FTP session, even if you stop and restart the session.

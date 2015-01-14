@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: vvivien
+Build-Jdk: 1.6.0_29
+Specification-Title: clamshell-launcher
+Specification-Version: 0.5.2
+Specification-Vendor: ClamShell-Cli
+Implementation-Title: clamshell-launcher
+Implementation-Version: 0.5.2
+Implementation-Vendor-Id: org.clamshellcli
+Implementation-Vendor: ClamShell-Cli
+Main-Class: cli.Run
+Project-Url: http://code.google.com/p/clamshell-cli/
+Class-Path: clilib/clamshell-api-0.5.2.jar clilib/clamshell-impl-core-
+ 0.5.2.jar clilib/gson-2.0.jar
+

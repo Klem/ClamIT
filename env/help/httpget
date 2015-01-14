@@ -1,0 +1,6 @@
+httpget [ip || hostname] help
+
+ Query an http host and returns the responses headers as well as the raw content.
+ Support url with parameters
+ If a proxy has been configured prior to calling httpget, its settings will be used
+ for the request.
