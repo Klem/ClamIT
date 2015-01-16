@@ -96,9 +96,9 @@ public class HttpGetCommand implements Command {
 			console.writeOutput("----------------------------------------\n");
 		
 		} catch (ClientProtocolException cpe) {
-			throw new ShellException(cpe);
+            cpe.printStackTrace();
 		} catch (IOException ioe) {
-			throw new ShellException(ioe);
+            ioe.printStackTrace();
 		} finally {
 			
 			client.getConnectionManager().shutdown();

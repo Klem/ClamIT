@@ -11,7 +11,7 @@ import org.clamshellcli.api.Context;
 import org.clamshellcli.core.AnInputController;
 
 public class ClamITController extends AnInputController{
-	public static String CLAMIT_NAMESPACE = "clamit";
+	public static String CLAMIT_NAMESPACE = "clamit.cmd";
 	public final static String KEY_ARGS_URL = "url";
     private Map<String,Command> commands;
 
@@ -27,6 +27,7 @@ public class ClamITController extends AnInputController{
         // handle command line entry.  NOTE: value can be null
         if(cmdLine != null && !cmdLine.trim().isEmpty()){
             String[] tokens = cmdLine.trim().split("\\s+");
+            System.out.println(cmdLine);
             if(!commands.isEmpty()){
                 Command cmd = commands.get(tokens[0]);
                 if(cmd != null){

@@ -26,7 +26,7 @@ public class ClamITSplashScreen implements SplashScreen {
 			.append("| |____  | |___    / /  | |   / /       | |           | |    | |  ").append(String.format("%n")) 
 			.append(" \\_____| |_____|  /_/   |_|  /_/        |_|           |_|    |_|  ").append(String.format("%n"))
 	    	.append("Simple Tools for smart developers").append(String.format("%n"))
-	    	.append("By Klem klem86@gmail.com").append(String.format("%n%n"))
+	    	.append("By Klem https://github.com/Klem").append(String.format("%n%n"))
 	    	.append("Powered by Clamshell-Cli framework ").append(String.format("%n"))
 	    	.append("http://code.google.com/p/clamshell-cli/").append(String.format("%n%n"))
 	    	.append("Java version: ").append(System.getProperty("java.version")).append(String.format("%n"))
