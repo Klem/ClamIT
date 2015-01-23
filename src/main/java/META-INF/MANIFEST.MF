@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Created-By: IntelliJ
+Built-By: klem
+Specification-Title: clamshell-clam-it
+Specification-Version: 0.1
+Specification-Vendor: Clam-IT
+Implementation-Title: clamshell-clam-it
+Implementation-Version: 0.5.2
+Implementation-Vendor-Id: org.clamshellcli
+Implementation-Vendor: ClamShell-Cli
+Project-Url: http://code.google.com/p/clamshell-cli/
