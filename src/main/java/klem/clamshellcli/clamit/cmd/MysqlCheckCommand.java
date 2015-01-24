@@ -46,7 +46,7 @@ public class MysqlCheckCommand implements Command {
 		String url;
 		
 		console.writeOutput(String.format(
-				"%nAttempting to connect to database %s on %s on port %s using credential %s/%s",
+				"%nAttempting to connect to database %s on port %s using credential %s/%s",
 			     host, port, user, password));
 
 		Connection connection = null;

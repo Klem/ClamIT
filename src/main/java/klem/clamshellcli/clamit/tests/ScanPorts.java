@@ -12,10 +12,10 @@ public class ScanPorts {
 	private static int MAX_PORT = 65536;
 	
 	public static void main(String[] args) {
-		int startPort =19;
-		int endPort = 25;
+		int startPort =1;
+		int endPort = 65535;
 		
-		String ip = "10.61.148.0";
+		String ip = "192.168.0.21";
 		
 		if(!Utils.validateIpFormat(ip)) {
 			System.err.println(String.format("%n%s is not a valid IP adress", ip));

@@ -4,6 +4,8 @@ import org.clamshellcli.api.Command;
 import org.clamshellcli.api.Context;
 import org.clamshellcli.core.AnInputController;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 public class ClamITController extends AnInputController{
@@ -20,10 +22,11 @@ public class ClamITController extends AnInputController{
     public boolean handle(Context ctx) {
         String cmdLine = (String)ctx.getValue(Context.KEY_COMMAND_LINE_INPUT);
         boolean handled = false;
+        Long start = System.currentTimeMillis();
         // handle command line entry.  NOTE: value can be null
         if(cmdLine != null && !cmdLine.trim().isEmpty()){
             String[] tokens = cmdLine.trim().split("\\s+");
-            System.out.println(cmdLine);
+
             if(!commands.isEmpty()){
                 Command cmd = commands.get(tokens[0]);
                 if(cmd != null){
@@ -31,10 +34,21 @@ public class ClamITController extends AnInputController{
                         String[] args = Arrays.copyOfRange(tokens, 1, tokens.length);
                         ctx.putValue(Context.KEY_COMMAND_LINE_ARGS, args);
                     }
-                    
-                    cmd.execute(ctx);
-                    ctx.getIoConsole().writeOutput("\n");
-                    
+                    // CATCH ANY EXCEPTION
+                    // AND HANDLES IT TO AVOID CLOSING THE APPLICATION ITSELF
+                    // INSTEAD OF THE COMMAND
+                    try {
+                        cmd.execute(ctx);
+                        ctx.getIoConsole().writeOutput("\n");
+
+                    } catch (Throwable t) {
+                        StringWriter sw = new StringWriter();
+                        t.printStackTrace(new PrintWriter(sw));
+                        String exceptionAsString = sw.toString();
+                        ctx.getIoConsole().writeOutput(exceptionAsString);
+                    }
+                    Long stop = System.currentTimeMillis();
+                    ctx.getIoConsole().writeOutput(String.format("%n --------executed in %s ms-------- %n",stop - start));
                     handled = true;
                 }else{
                     ctx.getIoConsole().writeOutput(String.format("%nCommand [%s] is unknown. "

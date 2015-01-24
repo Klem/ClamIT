@@ -1,44 +1,53 @@
 package klem.clamshellcli.clamit.tests;
 
-import klem.clamshellcli.clamit.tests.ScanIPCidr.InetRange;
+import klem.clamshellcli.clamit.impl.IpScanner;
 import klem.clamshellcli.clamit.utils.Utils;
 
-import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScanIPRange {
+	 static int TIMEOUT = 5000;
+	 public static int REACHED = 0;
 	 public static void main(String[] args) {
 		 
-		 String ipFrom = "10.61.148.1";
-		 String ipTo = "10.61.148.255";
-		 
+		 String ipFrom = "152.160.0.1";
+		 String ipTo = "152.168.0.255";
+		 Collection<IpScanner> jobs = new ArrayList<IpScanner>();
+
 	        try {
-	        	int ipStart;
-		        int ipEnd;
+	        	int ipStart = 0;
+		        int ipEnd = 0;
+				int totalIps = 0;
 	            if(Utils.validateIpFormat(ipFrom)) {
 	    			if(Utils.validateIpFormat(ipTo)) {
-	    				System.out.print(String.format("About to scan IP within range : %s ==> %s....%n", ipFrom, ipTo));
-	    				 
-	    				ipStart = host2int(ipFrom);
-	    		        ipEnd = host2int(ipTo);
-	    		        
+
+						ipStart = host2int(ipFrom);
+						ipEnd = host2int(ipTo);
+						totalIps = ipEnd - ipStart;
+
+						System.out.print(String.format("Scanning started for IPs within range : %s ==> %s with a %s ms timeout....%n", ipFrom, ipTo, TIMEOUT));
+						System.out.print(String.format("%s adresses to scan", totalIps));
+
+						ExecutorService executor = Executors.newFixedThreadPool(64);
 	    		        for (int i=ipStart; i<=ipEnd; i++) {
-	    		        	
-	    		        	String address = InetRange.intToIp(i);
-	    					InetAddress ip = InetAddress.getByName(address);
-	    					String hostname;
-	    					long currentTime = System.currentTimeMillis();
-	    					long ping = 0L;
-	    					if (ip.isReachable(2000)) {
-	    						ping = System.currentTimeMillis() - currentTime;
-	    						hostname = ip.getCanonicalHostName();
-	    					} else {
-	    						hostname = "unreachable";
-	    					}
-	    					System.out.print(String.format("%n|	%s	|	%s	|	%s ms	|", ip, hostname, ping ));
+							IpScanner scanner = new IpScanner(i, TIMEOUT);
+							executor.execute(scanner);
+
 	    	            }
-	    		        
-	    			}else {
+
+						executor.shutdown();
+
+						while (!executor.isTerminated()) {
+						}
+						System.out.print(String.format("%n%s adresses reached", REACHED));
+						System.out.print(String.format("%n%s adresses unreached",totalIps - REACHED));
+
+
+					}else {
 	    				System.err.println("Invalid IP adress "+ipTo);
 	    				return;
 	    			}
@@ -54,18 +63,7 @@ public class ScanIPRange {
 	    }
 
 
-	    private static long ip2long(InetAddress ip) {
-	        long l=0;
-	        byte[] addr = ip.getAddress();
-	        if (addr.length == 4) { //IPV4
-	            for (int i=0;i<4;++i) {
-	                l += (((long)addr[i] &0xFF) << 8*(3-i));
-	            }
-	        } else { //IPV6
-	            return 0;  // I dont know how to deal with these
-	        }
-	        return l;
-	    }
+
 
 
 	    private static int host2int(String host) {
@@ -93,17 +91,4 @@ public class ScanIPRange {
 	        }
 	        return address;
 	    }
-
-	    private static String long2dotted(long address) {
-	        StringBuffer sb = new StringBuffer();
-	        for (int i = 0, shift = 24; i < 4; i++, shift -= 8) {
-	            long value = (address >> shift) & 0xff;
-	            sb.append(value);
-	            if (i != 3) {
-	                sb.append('.');
-	            }
-	        }
-	        return sb.toString();
-	    }
-
 }

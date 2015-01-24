@@ -1,25 +1,32 @@
 package klem.clamshellcli.clamit.cmd;
 
 import klem.clamshellcli.clamit.ClamITController;
+import klem.clamshellcli.clamit.impl.IpScanner;
 import klem.clamshellcli.clamit.utils.IPUtils;
 import klem.clamshellcli.clamit.utils.Utils;
 import org.clamshellcli.api.Command;
 import org.clamshellcli.api.Context;
 import org.clamshellcli.api.IOConsole;
-import org.clamshellcli.core.ShellException;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+// TODO configure timeout via cli
+// TODO thread manager
+// TODO CHOOSE SINGLE OR MULTI TREADED VIA CLI
+// TODO CHOOSE TO DISPLAY UNREACABLE ADRESS VIA CLI
 public class ScanIPRangeCommand implements Command {
 	private static final String NAMESPACE = ClamITController.CLAMIT_NAMESPACE;
 	private static final String ACTION_NAME = "iprange";
-	public int ipStart;
-	public int ipEnd;
+	public static int REACHED = 0;
 	private IOConsole console;
+	private int TIMEOUT = 5000;
+
+	Collection<IpScanner> jobs = new ArrayList<IpScanner>();
 
 	@Override
 	public void plug(Context ctx) {
@@ -28,6 +35,12 @@ public class ScanIPRangeCommand implements Command {
 
 	@Override
 	public Object execute(Context ctx) {
+		int ipStart = 0;
+		int ipEnd = 0;
+		int totalIps = 0;
+
+
+		// USER INPUT VALIDATION START
 
 		String[] values = (String[]) ctx.getValue(Context.KEY_COMMAND_LINE_ARGS);
 
@@ -40,52 +53,46 @@ public class ScanIPRangeCommand implements Command {
 		String ipTo = values[1];
 
 		if (!Utils.validateIpFormat(ipFrom)) {
-			console.writeOutput(String.format("%n%s is not a valid IP adress", ipTo));
+			console.writeOutput(String.format("%n%s is not a valid IP adress", ipFrom));
 			return null;
 		}
 		if (!Utils.validateIpFormat(ipTo)) {
-			console.writeOutput(String.format("%n invalid ip range!"));
+			console.writeOutput(String.format("%n%s is not a valid IP adress", ipTo));
 			return null;
 		}
 		ipStart = IPUtils.ipToInt(ipFrom);
 		ipEnd = IPUtils.ipToInt(ipTo);
+		totalIps = ipEnd - ipStart;
 
 		if (ipStart > ipEnd) {
 			console.writeOutput(String.format("%n invalid ip range!"));
 			return null;
 		}
 
-		console.writeOutput(String.format("About to scan IP within range : %s ==> %s....%n", ipFrom, ipTo));
-		console.writeOutput(String.format("%n|%-15s | %-15s | %-15s | %-5s |", "       IP      ", "   HOSTNAME   ", "    STATUS    ", "PING"));
-		for (int i = ipStart; i <= ipEnd; i++) {
+		// USER INPUT VALIDATION OK
 
-			String address = IPUtils.intToIp(i);
-			InetAddress ip;
-			try {
-				ip = InetAddress.getByName(address);
-				
-				String status;
-				long currentTime = System.currentTimeMillis();
-				long ping = 0L;
-				if (ip.isReachable(2000)) {
-					ping = System.currentTimeMillis() - currentTime;
-					status = "reached";
-					ip.getHostAddress();
-					ip.getHostName();
+		System.out.println(String.format("About to scan IP within range : %s ==> %s with a %s ms timeout....%n", ipFrom, ipTo, TIMEOUT));
+		System.out.println(String.format("%s adresses to scan", totalIps));
+		//console.writeOutput(String.format("%n|%-15s | %-15s | %-15s | %-5s |", "       IP      ", "   HOSTNAME   ", "    STATUS    ", "PING"));
 
-				} else {
-					status = "unreachable";
-				}
-				console.writeOutput(String.format(" %-15s | %-15s | %-15s | %-5s |%n", ip.getHostAddress(), ip.getHostName(), status, ping + " ms"));
-			} catch (UnknownHostException uhe) {
-				throw new ShellException(uhe.getMessage(), uhe.getCause());
-			} catch (IOException ioe) {
-				throw new ShellException(ioe.getMessage(), ioe.getCause());
-			}
+		ExecutorService executor = Executors.newFixedThreadPool(64);
+		for (int i=ipStart; i<=ipEnd; i++) {
+			IpScanner scanner = new IpScanner(i, TIMEOUT);
+			executor.execute(scanner);
+
 		}
+
+		executor.shutdown();
+
+		while (!executor.isTerminated()) {
+		}
+		System.out.println(String.format("%n%s adresses reached", REACHED));
+		System.out.println(String.format("%n%s adresses unreached", totalIps - REACHED));
 
 		return null;
 	}
+
+
 
 	@Override
 	public Descriptor getDescriptor() {
@@ -125,7 +132,6 @@ public class ScanIPRangeCommand implements Command {
 
 				return args;
 			}
-
 		};
 	}
 }
