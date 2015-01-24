@@ -16,4 +16,5 @@ klem.clamshellcli.clamit.cmd.PingCommand
 klem.clamshellcli.clamit.cmd.ProxyConfigCommand
 klem.clamshellcli.clamit.cmd.ReadmeCommand
 klem.clamshellcli.clamit.cmd.ScanIPRangeCommand
+klem.clamshellcli.clamit.cmd.ScanPortsCommand
 klem.clamshellcli.clamit.cmd.UnMD5Command

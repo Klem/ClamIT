@@ -40,7 +40,7 @@ public class ProxyConfigCommand implements Command {
 	public Object execute(Context ctx) {
 		String[] values = (String[]) ctx.getValue(Context.KEY_COMMAND_LINE_ARGS);
 
-		// INPUT VERIFICATIONpro
+		// INPUT VERIFICATION
 		if (values == null || values.length < 1) {
 			console.writeOutput(String.format("%n%s","This command has arguments : "+ getDescriptor().getUsage()));
 			return null;

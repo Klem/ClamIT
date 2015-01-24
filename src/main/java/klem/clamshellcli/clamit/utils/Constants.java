@@ -21,8 +21,8 @@ public class Constants {
 	}
 	
 	public static class Input {
-		public static final String YES ="Y";
-		public static final String NO ="N";
+		public static final String YES ="y";
+		public static final String NO ="n";
 	}
 	
 	public static class Default {

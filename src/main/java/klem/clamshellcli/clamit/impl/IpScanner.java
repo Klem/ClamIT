@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 /**
- ClamIT Actual implementation called by {@link klem.clamshellcli.clamit.tests.ScanIPRange}
+ ClamIT
+ Actual implementation called by {@link klem.clamshellcli.clamit.cmd.ScanIPRangeCommand}
  <p/>
  Author : Klem Date   : 24/01/2015 Time   : 13:31 */
 public class IpScanner extends Thread {

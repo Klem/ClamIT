@@ -16,12 +16,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // TODO configure timeout via cli
-// TODO thread manager
 // TODO CHOOSE SINGLE OR MULTI TREADED VIA CLI
 // TODO CHOOSE TO DISPLAY UNREACABLE ADRESS VIA CLI
 public class ScanIPRangeCommand implements Command {
 	private static final String NAMESPACE = ClamITController.CLAMIT_NAMESPACE;
 	private static final String ACTION_NAME = "iprange";
+	private static final int MAX_THREADS = 64;
 	public static int REACHED = 0;
 	private IOConsole console;
 	private int TIMEOUT = 5000;
@@ -71,11 +71,11 @@ public class ScanIPRangeCommand implements Command {
 
 		// USER INPUT VALIDATION OK
 
-		System.out.println(String.format("About to scan IP within range : %s ==> %s with a %s ms timeout....%n", ipFrom, ipTo, TIMEOUT));
+		System.out.println(String.format("About to scan IP within range : %s ==> %s with a %s ms timeout using %s thread(s) %n", ipFrom, ipTo, TIMEOUT,MAX_THREADS));
 		System.out.println(String.format("%s adresses to scan", totalIps));
 		//console.writeOutput(String.format("%n|%-15s | %-15s | %-15s | %-5s |", "       IP      ", "   HOSTNAME   ", "    STATUS    ", "PING"));
-
-		ExecutorService executor = Executors.newFixedThreadPool(64);
+		REACHED = 0;
+		ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS);
 		for (int i=ipStart; i<=ipEnd; i++) {
 			IpScanner scanner = new IpScanner(i, TIMEOUT);
 			executor.execute(scanner);

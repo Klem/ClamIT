@@ -1,10 +1,12 @@
 package klem.clamshellcli.clamit.tests;
 
+import klem.clamshellcli.clamit.impl.PortScanner;
 import klem.clamshellcli.clamit.utils.Utils;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScanPorts {
 	
@@ -13,7 +15,7 @@ public class ScanPorts {
 	
 	public static void main(String[] args) {
 		int startPort =1;
-		int endPort = 65535;
+		int endPort = 8080;
 		
 		String ip = "192.168.0.21";
 		
@@ -47,15 +49,32 @@ public class ScanPorts {
 			System.err.print(String.format("%nInvalid port range specified! If you want to scan a single port, use the [checkPort] command"));
 			return;
 		}
+
+
+
 		
 		try {
 		InetAddress address = InetAddress.getByName(ip);
 		long currentTime = System.currentTimeMillis();
 		long ping = 0L;
-		if (address.isReachable(2000)) {
+		if (address.isReachable(5000)) {
 			ping = System.currentTimeMillis() - currentTime;
 			System.out.print(String.format("%nSuccess:: %s found in %s ms", ip, ping));
-			scanPort(address, startPort, endPort);
+			System.out.println(String.format("%nScanning port from %s to %s", startPort, endPort));
+			int currentPort;
+
+			ExecutorService executor = Executors.newFixedThreadPool(64);
+			for ( currentPort = startPort; currentPort < endPort; currentPort++) {
+				PortScanner scanner = new PortScanner(address, currentPort);
+				executor.execute(scanner);
+			}
+
+			executor.shutdown();
+
+			while (!executor.isTerminated()) {
+			}
+		//	System.out.println(String.format("%n%s port open", OPEN));
+		//	System.out.println(String.format("%n%s port closed ", totalPorts - OPEN));
 		} else {
 			System.out.print(String.format("%nPort scan failed, %s is unreachable", ip));
 			return;
@@ -67,23 +86,4 @@ public class ScanPorts {
 		}
 	}
 
-	private static void scanPort(InetAddress address, int startPort, int endPort) {
-		System.out.println(String.format("%nScanning port from %s to %s", startPort, endPort));
-		
-		int currentPort = 0;
-		
-	             for ( currentPort = startPort; currentPort < endPort; currentPort++) {
-	                 try {
-	                 Socket s = new Socket(address,currentPort);
-	                 System.out.print(String.format("%n%s	::	OPEN", currentPort));
-	                 s.close();
-	             }
-	                 catch (IOException ex) {
-	                	 System.out.print(String.format("%n%s	::	CLOSED", currentPort));
-	             }
-	         }//for ends
-
-	}
-	
-	
 }
